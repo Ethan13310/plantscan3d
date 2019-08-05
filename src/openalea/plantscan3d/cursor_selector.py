@@ -115,7 +115,7 @@ class CursorSelector:
         :return: None
         """
         currentDir = os.path.dirname(__file__)
-        cursorsPath = os.path.join(currentDir, '..', 'images', 'cursors')
+        cursorsPath = os.path.join(currentDir, 'images', 'cursors')
 
         for id, path in cursors:
             self.cursors[id] = QPixmap(os.path.join(cursorsPath, path))
