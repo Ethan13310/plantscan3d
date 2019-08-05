@@ -69,3 +69,5 @@ target/
 *_rc.py
 /src/openalea/plantscan3d/.plantscan3d.xml
 /.qglviewer.xml
+/.plantscan3d.xml
+/start.py

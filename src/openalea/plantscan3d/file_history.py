@@ -1,4 +1,3 @@
-from PyQt5.QtCore import *
 from collections import OrderedDict
 
 class FileHistory:
@@ -6,6 +5,9 @@ class FileHistory:
         self.setMenu(menu)
         self.callfunc = callfunc
         self.maxsize = maxsize
+        self.menu = None
+        self.files = OrderedDict([])
+        self.__discardedmenu = False
         self.clear()
 
     def setMenu(self, menu):
@@ -44,7 +46,7 @@ class FileHistory:
 
     def updateMenu(self):
         from os.path import basename 
-        if self.__discardedmenu :
+        if self.__discardedmenu:
             self.__discardedmenu = False
             self.menu.clear()
             def callbackgenerator(fname, param = None):
@@ -55,10 +57,16 @@ class FileHistory:
                     def callback():
                         return self.callfunc(fname)
                 return callback
+            i = 0
             for fname, param in list(self.files.items()):
-                self.menu.addAction(basename(fname), callbackgenerator(fname, param))
-            self.menu.addSeparator()
-            self.menu.addAction('Clear', self.clear)
+                i += 1
+                self.menu.addAction(str(i) + '. ' + basename(fname), callbackgenerator(fname, param))
+            if i == 0:
+                action = self.menu.addAction('No Recent File')
+                action.setEnabled(False)
+            else:
+                self.menu.addSeparator()
+                self.menu.addAction('Clear History', self.clear)
 
     def retrieveSettings(self, settings):
         settings.beginGroup("FileHistory")
@@ -75,5 +83,4 @@ class FileHistory:
         settings.beginGroup("FileHistory")
         files = [ftype+':'+fname for fname, ftype in list(self.files.items())]
         settings.setValue("RecentFiles",files)
-        files = settings.value("RecentFiles")
         settings.endGroup()

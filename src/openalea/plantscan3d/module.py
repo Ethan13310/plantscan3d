@@ -1,4 +1,6 @@
+from openalea.plantgl.gui.qt.QtCore import *
 from openalea.plantgl.gui.qt.QtGui import *
+from .theme_selector import Theme
 
 class Module:
 
@@ -27,6 +29,12 @@ class Module:
             self.viewer.unregisterEventListener(self)
 
         self.isListening = enable
+
+    def init(self):
+        pass
+
+    def closeEvent(self, event: QCloseEvent):
+        pass
 
     def dragEnterEvent(self, event: QDragEnterEvent):
         pass
@@ -59,4 +67,25 @@ class Module:
         pass
 
     def wheelEvent(self, event: QWheelEvent):
+        pass
+
+    def themeUpdateEvent(self, theme: Theme):
+        pass
+
+    def fastDraw(self):
+        pass
+
+    def draw(self):
+        pass
+
+    def postDraw(self):
+        pass
+
+    def drawWithNames(self):
+        pass
+
+    def endSelection(self, point: QPoint):
+        pass
+
+    def postSelection(self, point: QPoint):
         pass

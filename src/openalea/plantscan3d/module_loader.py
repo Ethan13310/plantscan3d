@@ -9,22 +9,42 @@ class ModuleLoader:
         """
         self.configFile = configFile
         self.modules = []
+        self.moduleNames = {}
 
-    def load(self):
+    def load(self, window) -> list:
         """
         Load all modules.
-        :return: None
+        :param window: The main window.
+        :return: list
         """
         self.modules = []
 
         for name, path in self.__getLoadOrder():
             try:
                 module = self.__loadModule(name, path)
+                module = module.export
+
+                if module is None:
+                    # The module has no 'export' variable
+                    raise ImportError()
+
+                module = module(window)
             except:
                 print('Could not load module:', name)
             else:
-                self.modules.append((name, module))
+                self.modules.append(module)
+                self.moduleNames[name] = module
                 print('Loaded module:', name)
+
+        return self.modules
+
+    def get(self, name: str):
+        """
+        Get a module by its name.
+        :param name: The name of the module
+        :return: object
+        """
+        return self.moduleNames[name] if name in self.moduleNames else None
 
     def __getLoadOrder(self) -> list:
         """

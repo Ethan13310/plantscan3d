@@ -7,11 +7,11 @@ class CursorSelector:
     Normal = 1
     PointSelect = 2
 
-    def __init__(self, editor):
+    def __init__(self, viewer):
         """
-        :param editor: MTGEditor widget
+        :param viewer: MainViewer widget
         """
-        self.editor = editor
+        self.viewer = viewer
 
         self.current = self.Normal
         self.pixmap = None
