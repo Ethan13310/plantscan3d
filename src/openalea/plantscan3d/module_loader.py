@@ -29,8 +29,9 @@ class ModuleLoader:
                     raise ImportError()
 
                 module = module(window)
-            except:
+            except Exception as e:
                 print('Could not load module:', name)
+                print('Reason:', str(e))
             else:
                 self.modules.append(module)
                 self.moduleNames[name] = module

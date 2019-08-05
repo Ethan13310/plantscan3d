@@ -1,15 +1,18 @@
 from openalea.plantgl.gui.qt.QtCore import *
 from openalea.plantgl.gui.qt.QtGui import *
+from .main_viewer import MainViewer
+from .main_window import MainWindow
+from .cursor_selector import CursorSelector
 
 class Module:
 
-    def __init__(self, window):
+    def __init__(self, window: MainWindow):
         """
         :param window: The main window.
         """
-        self.window = window
-        self.viewer = self.window.viewer
-        self.cursor = self.viewer.cursor
+        self.window: MainWindow = window
+        self.viewer: MainViewer = self.window.viewer
+        self.cursor: CursorSelector = self.viewer.cursor
         self.isListening = False
 
     def listenEvents(self, enable=True):
