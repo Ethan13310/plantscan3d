@@ -62,6 +62,7 @@
     <addaction name="actionOpenProject"/>
     <addaction name="actionSaveProject"/>
     <addaction name="separator"/>
+    <addaction name="actionExportViewBefore"/>
     <addaction name="menuExportView"/>
     <addaction name="separator"/>
     <addaction name="menuRecentFiles"/>
@@ -79,6 +80,7 @@
      <addaction name="actionWhiteTheme"/>
      <addaction name="actionBlackTheme"/>
     </widget>
+    <addaction name="actionThemeBefore"/>
     <addaction name="menuTheme"/>
    </widget>
    <widget class="QMenu" name="menuEdit">
@@ -293,6 +295,22 @@
    </property>
    <property name="text">
     <string>Black</string>
+   </property>
+  </action>
+  <action name="actionExportViewBefore">
+   <property name="text">
+    <string>Export View Before</string>
+   </property>
+   <property name="visible">
+    <bool>false</bool>
+   </property>
+  </action>
+  <action name="actionThemeBefore">
+   <property name="text">
+    <string>Theme Before</string>
+   </property>
+   <property name="visible">
+    <bool>false</bool>
    </property>
   </action>
  </widget>

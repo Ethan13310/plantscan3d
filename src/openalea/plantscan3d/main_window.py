@@ -17,6 +17,7 @@ if not py2exe_release:
     cui.check_ui_generation(os.path.join(ldir, 'main_window.ui'))
 
 from . import main_window_ui
+from .menu_bar import MenuBar
 from .module_loader import ModuleLoader
 from .plantscan_settings import PlantScanSettings
 
@@ -43,6 +44,7 @@ class MainWindow(QMainWindow, main_window_ui.Ui_MainWindow):
         except:
             pass
 
+        self.menu = MenuBar(self)
         self.moduleLoader = ModuleLoader('./src/openalea/plantscan3d/modules.conf')
 
     def loadModules(self):
