@@ -22,7 +22,7 @@ class MainViewer(QGLViewer):
         QGLViewer.__init__(self, parent)
         self.setStateFileName('.plantscan3d.xml')
 
-        self.fileHistory = FileHistory()
+        self.fileHistory = FileHistory(None, lambda a, b: None)
         self.fileHistory.retrieveSettings(PlantScanSettings())
 
         self.theme = ThemeSelector(self)
@@ -69,10 +69,10 @@ class MainViewer(QGLViewer):
                 break
 
         # Init modules
-        for module in self.modules(all=True):
+        for module in self.getModules(all=True):
             module.init()
 
-    def modules(self, all: bool=False, hasMethod: str=None):
+    def getModules(self, all: bool=False, hasMethod: str=None):
         """
         Return listening modules.
         :param all: Return all modules instead of only the listening ones.
@@ -94,6 +94,15 @@ class MainViewer(QGLViewer):
                 newModuleList.append(module)
 
         return newModuleList
+
+    def getModule(self, name):
+        """
+        Return a specific module.
+        :param name: The name of the module.
+        :return: object
+        """
+        allModules = self.mainWindow.moduleLoader.moduleNames
+        return allModules[name] if name in allModules else None
 
     def registerEventListener(self, module):
         """
@@ -122,7 +131,7 @@ class MainViewer(QGLViewer):
         :param event:
         :return: None
         """
-        for module in self.modules(all=True):
+        for module in self.getModules(all=True):
             module.closeEvent(event)
 
         if event.isAccepted():
@@ -154,7 +163,7 @@ class MainViewer(QGLViewer):
         :param event: 
         :return: None
         """
-        for module in self.modules():
+        for module in self.getModules():
             if module.dragEnterEvent(event):
                 break
 
@@ -164,7 +173,7 @@ class MainViewer(QGLViewer):
         :param event: 
         :return: None
         """
-        for module in self.modules():
+        for module in self.getModules():
             if module.dragLeaveEvent(event):
                 break
 
@@ -174,7 +183,7 @@ class MainViewer(QGLViewer):
         :param event: 
         :return: None
         """
-        for module in self.modules():
+        for module in self.getModules():
             if module.dragMoveEvent(event):
                 break
 
@@ -184,7 +193,7 @@ class MainViewer(QGLViewer):
         :param event: 
         :return: None
         """
-        for module in self.modules():
+        for module in self.getModules():
             if module.dropEvent(event):
                 break
 
@@ -194,7 +203,7 @@ class MainViewer(QGLViewer):
         :param event: 
         :return: None
         """
-        for module in self.modules():
+        for module in self.getModules():
             if module.keyPressEvent(event):
                 break
 
@@ -204,7 +213,7 @@ class MainViewer(QGLViewer):
         :param event: 
         :return: None
         """
-        for module in self.modules():
+        for module in self.getModules():
             if module.keyReleaseEvent(event):
                 break
 
@@ -214,7 +223,7 @@ class MainViewer(QGLViewer):
         :param event: 
         :return: None
         """
-        for module in self.modules():
+        for module in self.getModules():
             if module.mouseDoubleClickEvent(event):
                 break
 
@@ -224,7 +233,7 @@ class MainViewer(QGLViewer):
         :param event: 
         :return: None
         """
-        for module in self.modules():
+        for module in self.getModules():
             if module.mouseMoveEvent(event):
                 break
 
@@ -234,7 +243,7 @@ class MainViewer(QGLViewer):
         :param event: 
         :return: None
         """
-        for module in self.modules():
+        for module in self.getModules():
             if module.mousePressEvent(event):
                 break
 
@@ -244,7 +253,7 @@ class MainViewer(QGLViewer):
         :param event: 
         :return: None
         """
-        for module in self.modules():
+        for module in self.getModules():
             if module.mouseReleaseEvent(event):
                 break
 
@@ -254,7 +263,7 @@ class MainViewer(QGLViewer):
         :param event: 
         :return: None
         """
-        for module in self.modules():
+        for module in self.getModules():
             if module.wheelEvent(event):
                 break
 
@@ -263,7 +272,7 @@ class MainViewer(QGLViewer):
         Fast draw event.
         :return: None
         """
-        for module in self.modules(all=True):
+        for module in self.getModules(all=True):
             module.fastDraw()
 
     def draw(self):
@@ -271,7 +280,7 @@ class MainViewer(QGLViewer):
         Draw event.
         :return: None
         """
-        for module in self.modules(all=True):
+        for module in self.getModules(all=True):
             module.draw()
 
     def postDraw(self):
@@ -279,7 +288,7 @@ class MainViewer(QGLViewer):
         Post draw event.
         :return: None
         """
-        for module in self.modules(all=True):
+        for module in self.getModules(all=True):
             module.postDraw()
 
     def drawWithNames(self):
@@ -287,7 +296,7 @@ class MainViewer(QGLViewer):
         Draw with names event.
         :return: None
         """
-        for module in self.modules(all=True):
+        for module in self.getModules(all=True):
             module.drawWithNames()
 
     def endSelection(self, point: QPoint):
@@ -296,7 +305,7 @@ class MainViewer(QGLViewer):
         :param point:
         :return: None
         """
-        for module in self.modules():
+        for module in self.getModules():
             if module.endSelection(point):
                 break
 
@@ -306,7 +315,7 @@ class MainViewer(QGLViewer):
         :param point:
         :return: None
         """
-        for module in self.modules():
+        for module in self.getModules():
             if module.postSelection(point):
                 break
 
@@ -321,7 +330,7 @@ class MainViewer(QGLViewer):
         self.redoAvailable.emit(False)
 
         # Notify modules
-        for module in self.modules(all=True, hasMethod='backupCreateEvent'):
+        for module in self.getModules(all=True, hasMethod='backupCreateEvent'):
             module.backupCreateEvent()
 
     def undo(self):
@@ -355,7 +364,7 @@ class MainViewer(QGLViewer):
         self.theme.set(theme)
 
         # Notify modules
-        for module in self.modules(all=True, hasMethod='themeUpdateEvent'):
+        for module in self.getModules(all=True, hasMethod='themeUpdateEvent'):
             module.themeUpdateEvent(theme)
 
         self.updateGL()
