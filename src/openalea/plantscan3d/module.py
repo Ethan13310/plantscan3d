@@ -1,6 +1,5 @@
 from openalea.plantgl.gui.qt.QtCore import *
 from openalea.plantgl.gui.qt.QtGui import *
-from .theme_selector import Theme
 
 class Module:
 
@@ -67,9 +66,6 @@ class Module:
         pass
 
     def wheelEvent(self, event: QWheelEvent):
-        pass
-
-    def themeUpdateEvent(self, theme: Theme):
         pass
 
     def fastDraw(self):

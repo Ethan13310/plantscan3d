@@ -27,32 +27,13 @@ class MainWindow(QMainWindow, main_window_ui.Ui_MainWindow):
         :param parent: Parent window.
         """
         QMainWindow.__init__(self, parent)
-
         self.setupUi(self)
 
         self.themeActionGroup = QActionGroup(self)
         self.__setupActions()
 
-        #self.pointSizeSlider.setValue(self.viewer.pointinfo.pointWidth)
-        #self.nodeSizeSlider.setValue(self.viewer.nodeWidth)
-
-        self.visibilityEnabled.clicked.connect(self.viewer.enabledClippingPlane)
-        self.backVisibilitySlider.valueFloatChanged.connect(self.viewer.setBackVisibility)
-        self.frontVisibilitySlider.valueFloatChanged.connect(self.viewer.setFrontVisibility)
-        #self.pointSizeSlider.valueChanged.connect(self.viewer.setPointWidth)
-        #self.nodeSizeSlider.valueChanged.connect(self.viewer.setNodeWidth)
-        #self.pointFilterSlider.valueFloatChanged.connect(self.viewer.setPointFilter)
-
         self.viewer.mainWindow = self
         self.viewer.fileHistory.setMenu(self.menuRecentFiles)
-
-        self.viewer.statusBar = self.statusBar
-
-        self.pointSizeSlider.setup('Point Size', 1, 10, 2)
-        self.pointFilterSlider.setup('Point Filter', 0, 1, 0, 3)
-        self.nodeSizeSlider.setup('Node Size', 1, 10, 1)
-        self.frontVisibilitySlider.setup('Near', 0.01, 1, 0.01, 2)
-        self.backVisibilitySlider.setup('Far', 0, 0.99, 0.99, 2)
 
         # Default docks size
         self.resizeDocks([self.dockDisplay, self.dockRender], [240, 240], Qt.Horizontal)
@@ -71,25 +52,25 @@ class MainWindow(QMainWindow, main_window_ui.Ui_MainWindow):
         """
         self.moduleLoader.load(self)
 
-    def closeEvent(self, event):
+    def closeEvent(self, event: QCloseEvent):
         """
         Close event.
         :param event:
         :return: None
         """
-        settings = PlantScanSettings()
+        self.viewer.closeEvent(event)
 
+        if not event.isAccepted():
+            # The close event has been rejected, we do not
+            # save anything
+            return
+
+        settings = PlantScanSettings()
         # Window State
         settings.beginGroup('Window')
         settings.setValue('Geometry', self.saveGeometry())
         settings.setValue('State', self.saveState())
         settings.endGroup()
-
-        for module in self.moduleLoader.modules:
-            module.closeEvent(event)
-
-        self.viewer.closeEvent(event)
-        event.accept()
 
     def __setupActions(self):
         """
@@ -97,8 +78,7 @@ class MainWindow(QMainWindow, main_window_ui.Ui_MainWindow):
         :return: None
         """
         # 'File' menu
-        #self.actionExportPlantGL.triggered.connect(self.viewer.exportAsGeom)
-        #self.actionSaveSnapshot.triggered.connect(self.viewer.saveSnapshot)
+        self.actionSaveSnapshot.triggered.connect(self.viewer.saveSnapshot)
         self.actionExit.triggered.connect(self.close)
 
         # 'Edit' menu
@@ -108,9 +88,6 @@ class MainWindow(QMainWindow, main_window_ui.Ui_MainWindow):
         self.viewer.redoAvailable.connect(self.actionRedo.setEnabled)
 
         # 'View' menu
-        self.actionDisplayAllScene.triggered.connect(self.viewer.showEntireScene)
-        self.actionRevolveAroundScene.triggered.connect(self.viewer.revolveAroundScene)
-
         self.themeActionGroup.addAction(self.actionWhiteTheme)
         self.themeActionGroup.addAction(self.actionBlackTheme)
 

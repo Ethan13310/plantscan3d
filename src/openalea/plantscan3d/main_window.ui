@@ -52,7 +52,6 @@
      <property name="title">
       <string>Export View</string>
      </property>
-     <addaction name="actionExportPlantGL"/>
      <addaction name="actionSaveSnapshot"/>
     </widget>
     <widget class="QMenu" name="menuRecentFiles">
@@ -80,9 +79,6 @@
      <addaction name="actionWhiteTheme"/>
      <addaction name="actionBlackTheme"/>
     </widget>
-    <addaction name="actionDisplayAllScene"/>
-    <addaction name="actionRevolveAroundScene"/>
-    <addaction name="separator"/>
     <addaction name="menuTheme"/>
    </widget>
    <widget class="QMenu" name="menuEdit">
@@ -240,16 +236,6 @@
     <string>Ctrl+Q</string>
    </property>
   </action>
-  <action name="actionDisplayAllScene">
-   <property name="text">
-    <string>Display All Scene</string>
-   </property>
-  </action>
-  <action name="actionExportPlantGL">
-   <property name="text">
-    <string>PlantGL File</string>
-   </property>
-  </action>
   <action name="actionUndo">
    <property name="enabled">
     <bool>false</bool>
@@ -264,11 +250,6 @@
   <action name="actionSaveSnapshot">
    <property name="text">
     <string>Snapshot</string>
-   </property>
-  </action>
-  <action name="actionRevolveAroundScene">
-   <property name="text">
-    <string>Revolve Around Scene</string>
    </property>
   </action>
   <action name="actionRedo">
