@@ -15,10 +15,12 @@ class Module:
         self.cursor: CursorSelector = self.viewer.cursor
         self.isListening = False
 
-    def listenEvents(self, enable=True):
+    def listenEvents(self, enable=True, highPriority=False):
         """
         Enable or disable event listening.
         :param enable: Enable or disable.
+        :param highPriority: If True, the module will be appended at
+        the beginning of the queue.
         :return: None
         """
         if enable == self.isListening:
@@ -26,11 +28,21 @@ class Module:
             return
 
         if enable:
-            self.viewer.registerEventListener(self)
+            self.viewer.registerEventListener(self, highPriority)
         else:
             self.viewer.unregisterEventListener(self)
 
         self.isListening = enable
+
+    def getModule(self, name: str, assertExists: bool=False):
+        """
+        Return a specific module.
+        :param name: The name of the module.
+        :param assertExists: If set to True, raise an exception if the module
+        does not exist.
+        :return: object
+        """
+        return self.viewer.getModule(name, assertExists)
 
     def init(self):
         pass
@@ -78,6 +90,9 @@ class Module:
         pass
 
     def postDraw(self):
+        pass
+
+    def beginSelection(self, point: QPoint):
         pass
 
     def drawWithNames(self):

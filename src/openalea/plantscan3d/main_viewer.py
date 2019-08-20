@@ -1,6 +1,7 @@
 from openalea.plantgl.gui.qt.QtCore import *
 from openalea.plantgl.gui.qt.QtGui import *
 from openalea.plantgl.gui.editablectrlpoint import *
+from OpenGL.GL import *
 from .backup import Backup
 from .file_history import FileHistory
 from .theme_selector import ThemeSelector
@@ -31,7 +32,7 @@ class MainViewer(QGLViewer):
 
         self.discretizer = Discretizer()
         self.glRenderer = GLRenderer(self.discretizer)
-        self.glRenderer.renderingMode = GLRenderer.Dynamic
+        self.glRenderer.renderingMode = self.glRenderer.Dynamic
 
         try:
             self.glRenderer.setGLFrame(self)
@@ -46,6 +47,7 @@ class MainViewer(QGLViewer):
 
         # Disable application exit when using Escape
         self.setShortcut(QGLViewer.EXIT_VIEWER, 0)
+        
         self.setAcceptDrops(True)
 
         # Listening modules
@@ -95,24 +97,37 @@ class MainViewer(QGLViewer):
 
         return newModuleList
 
-    def getModule(self, name):
+    def getModule(self, name: str, assertExists: bool=False):
         """
         Return a specific module.
         :param name: The name of the module.
+        :param assertExists: If set to True, raise an exception if the module
+        does not exist.
         :return: object
         """
         allModules = self.mainWindow.moduleLoader.moduleNames
-        return allModules[name] if name in allModules else None
+        module = allModules[name] if name in allModules else None
 
-    def registerEventListener(self, module):
+        if assertExists and module is None:
+            # The required module does not exist
+            raise Exception('Module ' + name + ' not found.')
+
+        return module
+
+    def registerEventListener(self, module, highPriority: bool=False):
         """
         Register a module as an event listener.
         :param module: The module to register.
+        :param highPriority: If True, the module will be appended at
+        the beginning of the queue.
         :return: None
         """
         if self.eventListeners.count(module) == 0:
             # The module is not registered yet
-            self.eventListeners.append(module)
+            if highPriority:
+                self.eventListeners.appendleft(module)
+            else:
+                self.eventListeners.append(module)
 
     def unregisterEventListener(self, module):
         """
@@ -205,7 +220,9 @@ class MainViewer(QGLViewer):
         """
         for module in self.getModules():
             if module.keyPressEvent(event):
-                break
+                return
+
+        QGLViewer.keyPressEvent(self, event)
 
     def keyReleaseEvent(self, event: QKeyEvent):
         """
@@ -215,7 +232,9 @@ class MainViewer(QGLViewer):
         """
         for module in self.getModules():
             if module.keyReleaseEvent(event):
-                break
+                return
+
+        QGLViewer.keyReleaseEvent(self, event)
 
     def mouseDoubleClickEvent(self, event: QMouseEvent):
         """
@@ -225,7 +244,9 @@ class MainViewer(QGLViewer):
         """
         for module in self.getModules():
             if module.mouseDoubleClickEvent(event):
-                break
+                return
+
+        QGLViewer.mouseDoubleClickEvent(self, event)
 
     def mouseMoveEvent(self, event: QMouseEvent):
         """
@@ -235,7 +256,9 @@ class MainViewer(QGLViewer):
         """
         for module in self.getModules():
             if module.mouseMoveEvent(event):
-                break
+                return
+
+        QGLViewer.mouseMoveEvent(self, event)
 
     def mousePressEvent(self, event: QMouseEvent):
         """
@@ -245,7 +268,9 @@ class MainViewer(QGLViewer):
         """
         for module in self.getModules():
             if module.mousePressEvent(event):
-                break
+                return
+
+        QGLViewer.mousePressEvent(self, event)
 
     def mouseReleaseEvent(self, event: QMouseEvent):
         """
@@ -255,7 +280,9 @@ class MainViewer(QGLViewer):
         """
         for module in self.getModules():
             if module.mouseReleaseEvent(event):
-                break
+                return
+
+        QGLViewer.mouseReleaseEvent(self, event)
 
     def wheelEvent(self, event: QWheelEvent):
         """
@@ -265,13 +292,17 @@ class MainViewer(QGLViewer):
         """
         for module in self.getModules():
             if module.wheelEvent(event):
-                break
+                return
+
+        QGLViewer.wheelEvent(self, event)
 
     def fastDraw(self):
         """
         Fast draw event.
         :return: None
         """
+        glDisable(GL_LIGHTING)
+
         for module in self.getModules(all=True):
             module.fastDraw()
 
@@ -280,6 +311,8 @@ class MainViewer(QGLViewer):
         Draw event.
         :return: None
         """
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
+
         for module in self.getModules(all=True):
             module.draw()
 
@@ -291,13 +324,24 @@ class MainViewer(QGLViewer):
         for module in self.getModules(all=True):
             module.postDraw()
 
+    def beginSelection(self, point: QPoint):
+        """
+        Begin selection event.
+        :param point:
+        :return: None
+        """
+        for module in self.getModules(all=True):
+            if module.beginSelection(point):
+                break
+
     def drawWithNames(self):
         """
         Draw with names event.
         :return: None
         """
         for module in self.getModules(all=True):
-            module.drawWithNames()
+            if module.drawWithNames():
+                break
 
     def endSelection(self, point: QPoint):
         """
@@ -305,7 +349,7 @@ class MainViewer(QGLViewer):
         :param point:
         :return: None
         """
-        for module in self.getModules():
+        for module in self.getModules(all=True):
             if module.endSelection(point):
                 break
 
@@ -315,7 +359,7 @@ class MainViewer(QGLViewer):
         :param point:
         :return: None
         """
-        for module in self.getModules():
+        for module in self.getModules(all=True):
             if module.postSelection(point):
                 break
 

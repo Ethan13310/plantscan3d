@@ -35,7 +35,7 @@ class RecentFilesLoader(Module):
         """
         if fileType == 'PTS':
             # Point set
-            self.viewer.getModule('pointset_loader').loadFromFile(filePath)
+            self.getModule('pointset_loader').loadFromFile(filePath)
         else:
             # Unknown file type
             raise Exception()

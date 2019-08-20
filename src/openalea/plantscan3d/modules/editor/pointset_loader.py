@@ -29,10 +29,9 @@ class PointsetLoader(Module):
         extensions = 'Pointset Files (*.asc *.xyz *.pwn *.pts *.txt *.bgeom *.ply);;All Files (*.*)'
         filePath = QFileDialog.getOpenFileName(self.window, 'Open pointset file', self.__getLastPath(), extensions)[0]
 
-        if filePath:
-            # We open the selected file
-            if self.loadFromFile(filePath):
-                self.viewer.fileHistory.add(filePath, 'PTS')
+        # We open the selected file
+        if filePath and self.loadFromFile(filePath):
+            self.viewer.fileHistory.add(filePath, 'PTS')
 
     def loadFromFile(self, filePath: str) -> bool:
         """
@@ -59,6 +58,11 @@ class PointsetLoader(Module):
             QMessageBox.warning(self.window, 'Error', 'Could not display scene: pointset editor module is missing.')
             return False
 
+        # Activate the selector
+        selector = self.getModule('pointset_selector')
+        if selector is not None:
+            selector.listenEvents()
+
         self.actionExport.setEnabled(True)
         return True
 
@@ -72,7 +76,7 @@ class PointsetLoader(Module):
 
         if filePath:
             try:
-                Scene([self.viewer.getModule('pointset_editor').points]).save(filePath)
+                Scene([self.getModule('pointset_editor').points]).save(filePath)
             except:
                 QMessageBox.warning(self.window, 'Error', 'Could not save pointset to file.')
             else:
@@ -96,7 +100,7 @@ class PointsetLoader(Module):
         :param scene: The scene to display.
         :return: None
         """
-        editor = self.viewer.getModule('pointset_editor')
+        editor = self.getModule('pointset_editor')
 
         if editor is None:
             # Missing poinset editor module

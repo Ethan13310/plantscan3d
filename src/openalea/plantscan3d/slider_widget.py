@@ -1,22 +1,12 @@
-try:
-    import openalea.plantscan3d.py2exe_release
-    py2exe_release = True
-    print('Py2ExeRelease')
-except ImportError:
-    py2exe_release = False
-    print('StdRelease')
-
 from openalea.plantgl.gui.qt.QtCore import *
 from openalea.plantgl.gui.qt.QtGui import *
+from . import utils
+import re
 
-if not py2exe_release:
-    # Qt UI Build
-    from . import ui_compiler as cui
-    ldir = os.path.dirname(__file__)
-    cui.check_ui_generation(os.path.join(ldir, 'slider_widget.ui'))
+# UI Compilation
+utils.compileUi('slider_widget.ui')
 
 from . import slider_widget_ui
-import re
 
 class SliderWidget(QWidget, slider_widget_ui.Ui_Slider):
 
@@ -326,7 +316,7 @@ class SliderWidget(QWidget, slider_widget_ui.Ui_Slider):
             if len(value) != 0 and self.isInBounds(value):
                 # We set the new value
                 self.setValue(value)
-                self.valueLineEdit.setText(self.__getTextValue())
+            self.valueLineEdit.setText(value)
         except:
             pass
 
