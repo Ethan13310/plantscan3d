@@ -46,8 +46,16 @@ class Backup:
             backupobject.setattribute(data[backupobject.name])
 
     def make_backup(self, name):
-        self.backupdata.append({'type': name, 'data': self.copy_data(name)})
-        self.redodata = []
+        try:
+            self.backupdata.append({'type': name, 'data': self.copy_data(name)})
+        finally:
+            self.redodata = []
+
+    def undo_available(self):
+        return len(self.backupdata) > 0
+
+    def redo_available(self):
+        return len(self.redodata) > 0
 
     def restore_backup(self):
         if len(self.backupdata) > 0:

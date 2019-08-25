@@ -251,7 +251,7 @@ class MainViewer(QGLViewer):
     def mouseMoveEvent(self, event: QMouseEvent):
         """
         Mouse move event.
-        :param event: 
+        :param event:
         :return: None
         """
         for module in self.getModules():
@@ -283,6 +283,7 @@ class MainViewer(QGLViewer):
                 return
 
         QGLViewer.mouseReleaseEvent(self, event)
+        self.updateGL()
 
     def wheelEvent(self, event: QWheelEvent):
         """
@@ -369,9 +370,13 @@ class MainViewer(QGLViewer):
         :param name: The name of the backup.
         :return: None
         """
-        self.backup.make_backup(name)
-        self.undoAvailable.emit(True)
-        self.redoAvailable.emit(False)
+        try:
+            self.backup.make_backup(name)
+        except:
+            pass
+
+        self.undoAvailable.emit(self.backup.undo_available())
+        self.redoAvailable.emit(self.backup.redo_available())
 
         # Notify modules
         for module in self.getModules(all=True, hasMethod='backupCreateEvent'):
@@ -383,7 +388,8 @@ class MainViewer(QGLViewer):
         :return: None
         """
         if self.backup.restore_backup():
-            self.redoAvailable.emit(True)
+            self.redoAvailable.emit(self.backup.redo_available())
+            self.undoAvailable.emit(self.backup.undo_available())
             self.updateGL()
         else:
             self.undoAvailable.emit(False)
@@ -394,7 +400,8 @@ class MainViewer(QGLViewer):
         :return: None
         """
         if self.backup.restore_redo():
-            self.undoAvailable.emit(True)
+            self.redoAvailable.emit(self.backup.redo_available())
+            self.undoAvailable.emit(self.backup.undo_available())
             self.updateGL()
         else:
             self.redoAvailable.emit(False)

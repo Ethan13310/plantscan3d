@@ -31,18 +31,27 @@ class MenuBar:
         menu.insertAction(self.window.actionSaveSnapshot, action)
         return action
 
-    def addMenu(self, mainMenu: str, menuTitle: str) -> QMenu:
+    def addMenu(self, mainMenu: str, menuTitle: str, useExisting: bool=False) -> QMenu:
         """
         Add a new sub-menu to the specified main menu.
         :param mainMenu: The title of the main menu.
         :param menuTitle: The title of the sub-menu to add.
+        :param useExisting: Use and existing menu, if any, instead of creating
+        a new one.
         :return: QMenu
         """
         mainMenuTitle = mainMenu.title()
         mainMenu = self.__getMainMenu(mainMenuTitle)
 
+        # We get the submenu if it already exists
+        if useExisting:
+            for action in mainMenu.actions():
+                subMenu = action.menu()
+                if subMenu is not None:
+                    return subMenu
+
         subMenu = QMenu(menuTitle, mainMenu)
-        self.__insert(mainMenu, mainMenuTitle, subMenu)
+        self.__insert(mainMenu, mainMenuTitle, subMenu.menuAction())
         return subMenu
 
     def addAction(self, mainMenu: str, actionText: str) -> QAction:

@@ -103,7 +103,6 @@ class PointsetSelector(Module):
             Scene([Shape(PointSet(self.editor.points.pointList, self.editor.points.colorList), self.viewer.pointMaterial)]).apply(self.viewer.glRenderer)
         else:
             # Hybrid selection
-            print('hybrid',len(self.editor.pointsRep[0].geometry.pointList))
             self.editor.pointsRep.apply(self.viewer.glRenderer)
 
     def endSelection(self, point: QPoint):
